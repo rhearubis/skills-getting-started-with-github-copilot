@@ -13,6 +13,9 @@ document.addEventListener("DOMContentLoaded", () => {
       // Clear loading message
       activitiesList.innerHTML = "";
 
+      // Reset activity select (keep default option)
+      activitySelect.innerHTML = '<option value="">-- Select an activity --</option>';
+
       // Populate activities list
       Object.entries(activities).forEach(([name, details]) => {
         const activityCard = document.createElement("div");
@@ -20,14 +23,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const spotsLeft = details.max_participants - details.participants.length;
 
+        // Basic info + container for participants (populated below)
         activityCard.innerHTML = `
           <h4>${name}</h4>
           <p>${details.description}</p>
           <p><strong>Schedule:</strong> ${details.schedule}</p>
           <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
+          <div class="participants-section">
+            <strong>Participants:</strong>
+            <div class="participants-list"></div>
+          </div>
         `;
 
         activitiesList.appendChild(activityCard);
+
+        // Render participants list (bulleted / pretty)
+        const participantsContainer = activityCard.querySelector(".participants-list");
+        if (!details.participants || details.participants.length === 0) {
+          const empty = document.createElement("p");
+          empty.className = "info";
+          empty.textContent = "No participants yet.";
+          participantsContainer.appendChild(empty);
+        } else {
+          const ul = document.createElement("ul");
+          details.participants.forEach((p) => {
+            const li = document.createElement("li");
+            li.className = "participant-item";
+            li.textContent = p;
+            ul.appendChild(li);
+          });
+          participantsContainer.appendChild(ul);
+        }
 
         // Add option to select dropdown
         const option = document.createElement("option");
